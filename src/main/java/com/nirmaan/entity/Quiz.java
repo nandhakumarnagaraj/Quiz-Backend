@@ -5,6 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -22,11 +23,7 @@ public class Quiz {
 
 	private String quizText;
 
-	// A Quiz has many Questions.
-	// CascadeType.ALL: Operations (like save, delete) cascade down.
-	// orphanRemoval=true: If a Question is removed from this list, it's deleted
-	// from DB.
-	@OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonManagedReference // The "forward" part of the bi-directional relationship (serialized)
+	@OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonManagedReference
 	private List<Question> questions = new ArrayList<>();
 }

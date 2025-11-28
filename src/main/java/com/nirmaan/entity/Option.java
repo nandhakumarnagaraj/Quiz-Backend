@@ -1,7 +1,6 @@
 package com.nirmaan.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -32,10 +31,8 @@ public class Option {
 		this.correct = correct;
 	}
 
-
-	// An Option belongs to one Question.
 	@ManyToOne
-	@JoinColumn(name = "question_id") 
+	@JoinColumn(name = "question_id")
 	@JsonBackReference
 	private Question question;
 }

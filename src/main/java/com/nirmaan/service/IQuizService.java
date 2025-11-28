@@ -7,7 +7,7 @@ public interface IQuizService {
 
 	Quiz createQuiz(Quiz quiz);
 
-	Quiz getQuizById(int quizId);
+	Quiz getQuizById(int id);
 
 	List<Quiz> getAllQuizzes();
 

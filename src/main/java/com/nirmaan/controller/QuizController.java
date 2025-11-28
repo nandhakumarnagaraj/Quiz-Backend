@@ -6,18 +6,16 @@ import com.nirmaan.service.IQuizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/quizzes") // Base path for all quiz endpoints
+@CrossOrigin(origins = "http://localhost:4200")
 public class QuizController {
-
-	private final IQuizService quizService;
-
+	
 	@Autowired
-	public QuizController(IQuizService quizService) {
-		this.quizService = quizService;
-	}
+	private IQuizService quizService;
 
 	// 1. CREATE - POST /api/quizzes
 	@PostMapping
@@ -26,19 +24,31 @@ public class QuizController {
 		return new ResponseEntity<>(createdQuiz, HttpStatus.CREATED);
 	}
 
-	// 2. READ ALL - GET /api/quizzes
 	@GetMapping
-	public ResponseEntity<List<Quiz>> getAllQuizzes() {
-		List<Quiz> quizzes = quizService.getAllQuizzes();
-		return ResponseEntity.ok(quizzes);
-	}
+    @Transactional(readOnly = true)  // ADD THIS LINE
+    public List<Quiz> getAllQuizzes() {
+        List<Quiz> quizzes = quizService.getAllQuizzes();
+        // Force initialize lazy collections
+        quizzes.forEach(quiz -> {
+            quiz.getQuestions().size();  // This triggers loading
+            quiz.getQuestions().forEach(question -> 
+                question.getOptions().size()  // This triggers loading
+            );
+        });
+        return quizzes;
+    }
 
-	// 3. READ BY ID - GET /api/quizzes/{id}
 	@GetMapping("/{id}")
-	public ResponseEntity<Quiz> getQuizById(@PathVariable int id) {
-		Quiz quiz = quizService.getQuizById(id);
-		return ResponseEntity.ok(quiz);
-	}
+    @Transactional(readOnly = true)  // ADD THIS LINE
+    public Quiz getQuizById(@PathVariable int id) {
+        Quiz quiz = quizService.getQuizById(id);
+        // Force initialize lazy collections
+        quiz.getQuestions().size();
+        quiz.getQuestions().forEach(question -> 
+            question.getOptions().size()
+        );
+        return quiz;
+    }
 
 	// 4. UPDATE - PUT /api/quizzes/{id}
 	@PutMapping("/{id}")

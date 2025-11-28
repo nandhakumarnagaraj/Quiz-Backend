@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,15 +26,12 @@ public class Question {
 
 	private String questionText;
 
-	// A Question has many Options.
-	@OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true, fetch = jakarta.persistence.FetchType.EAGER)
+	@OneToMany(mappedBy = "question", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonManagedReference
 	private List<Option> options = new ArrayList<>();
 
-	// A Question belongs to one Quiz.
 	@ManyToOne
-	@JoinColumn(name = "quiz_id") // Foreign key column
-	@JsonBackReference // The "back" part of the bi-directional relationship (ignored during
-						// serialization)
+	@JoinColumn(name = "quiz_id")
+	@JsonBackReference
 	private Quiz quiz;
 }
